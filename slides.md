@@ -1,24 +1,28 @@
 ---
 title: Python for Statisticians
+subtitle: (\texttt{permute}---Permutation tests and confidence sets for Python)
 author:  K. Jarrod Millman \newline
    \small Division of Biostatistics \newline
    \small University of California, Berkeley
 date: \small SciPy India 2015 \newline
    \footnotesize IIT Bombay
+   \vspace{.4cm}
+   \vspace{.4cm}
+   \tiny \url{http://www.jarrodmillman.com/talks/scipyindia2015/python_for_statisticians.pdf}
 ...
 
 ---
 
 \begin{columns}
-    \begin{column}{0.58\textwidth}
+    \begin{column}{0.50\textwidth}
        \begin{figure}
           \includegraphics{figs/pfse.pdf}
        \end{figure}
     \end{column}
-    \begin{column}{0.38\textwidth}
+    \begin{column}{0.50\textwidth}
         Python for Statisticians
         \begin{itemize}
-            \item Statistical computing landscape
+            \item Statistical computing
             \item Permutation testing
         \end{itemize}
     \end{column}
@@ -42,55 +46,98 @@ date: \small SciPy India 2015 \newline
        \end{figure}
     \end{column}
 \end{columns}
+\hfill \tiny Credit: \url{en.wikipedia.org/wiki/Marchant_calculator} \hspace{.6cm}
 
 ## History of statistical programming
 
 \begin{columns}
-    \begin{column}{0.58\textwidth}
+    \begin{column}{0.60\textwidth}
+       \vspace{4em}
+
        Once upon a time, statistical programming involved
        calling Fortan subroutines directly.
        \vspace{1em}
 
        S provided a common environment to interactively
        explore data.
-       \vspace{1em}
-
-       R is now widely used by statisticians and data scientists.
     \end{column}
-    \begin{column}{0.38\textwidth}
+    \begin{column}{0.47\textwidth}
+        \vspace{1cm}
         \begin{itemize}
             \item Fortan (1950s)
             \item APL (1960s)
             \item S (1970s)
             \item R (1990s)
+            \item Python (1990s)
         \end{itemize}
     \end{column}
 \end{columns}
+\begin{columns}
+    \begin{column}{0.30\textwidth}
+    \end{column}
+    \begin{column}{0.67\textwidth}
+        \begin{figure}
+           \includegraphics{figs/410px-APL-keybd2.svg.png}
+        \end{figure}
+    \end{column}
+\end{columns}
+\hfill \tiny Credit: en.wikipedia.org/wiki/APL_(programming_language)
 
-## Computationally intensive statistical methods
+## Monte Carlo
 
-- Resampling methods: bootstrap, permutation methods
-- Markov Chain Monte Carlo
-- Kernel density estimation
-- Neural networks
+```python
+>>> from numpy import sqrt
+>>> from numpy.random import random
+```
+\columnsbegin
+\column{.48\textwidth}
 
-## Concepts in Computing with Data (Stat 133)
+![](figs/monte_carlo.png)
+
+\column{.52\textwidth}
+
+~~~~~~~~Python
+>>> x = 2*random(10**8) - 1
+>>> y = 2*random(10**8) - 1
+>>> length = sqrt(x**2 + y**2)
+>>> in_circle = length <= 1
+>>> 4 * in_circle.mean()
+3.14152224
+~~~~~~~~
+
+\columnsend
+
+## Deep learning
+
+![](figs/deeplearning.png)
+
+## Stat 133: Concepts in Computing with Data
 
 ![](figs/undergrad_v_stat133.png)
 
 ## Why Python?
 
-- "General" purpose language
-- "Batteries included" --- networking, database, etc.
-- Popular for wide-range of scientific applications
-- Growing number of libraries for specialized statistical applications
+- \textcolor{blue}{General} purpose language with \textcolor{blue}{batteries included}
+- Popular for wide-range of \textcolor{blue}{scientific applications}
+- Growing number of libraries \textcolor{blue}{statistical applications}
     - Pandas, sklearn, statmodels
 
-## Python in the statistics curriculum
+## Stat 94: Foundations of Data Science
+
+
+![](figs/data-rgarner.jpg)
+\hfill \tiny Credit: \url{www.dailycal.org/2015/09/02/uc-berkeley-piloting-new-data-science-class-fall}
+
+## \url{data8.org}
+
+![](figs/data8.png)
+
+## More Python in the statistics curriculum
 
 - Stat 159/259: Reproducible and Collaborative Statistical Data Science
 - Stat 222: Masters of Statistics Capstone Project
 - Stat 243: Introduction to Statistical Computing
+
 
 # Permutation testing
 
@@ -149,14 +196,14 @@ To avoid confounding
 - divide the field into small, equally-sized blocks
 - 
 
-## Example: Effect of treatment in a randomized controlled experiment \small (www.stat.berkeley.edu/~stark/Teach/S240/Notes/lec1.pdf)
+## Effect of treatment in a randomized controlled experiment \small \url{www.stat.berkeley.edu/~stark/Teach/S240/Notes/lec1.pdf}
 
 11 pairs of rats, each pair from the same litter.
 
 \vfill
 
 Randomly---by coin tosses---put one of each pair into
-``enriched'' environment; other sib gets ''normal'' environment.
+"enriched" environment; other sib gets "normal" environment.
 
 \vfill
 
@@ -174,3 +221,7 @@ difference & 32&  33&  16&   6&  21&  17&  64&   7&  89&  -2&  11
 \vfill
 
 \textcolor{green}{How should we analyze the data?}
+
+## Collaborators
+
+![](figs/collaborators.png)
