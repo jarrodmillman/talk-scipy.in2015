@@ -46,7 +46,7 @@ date: \small SciPy India 2015 \newline
        \end{figure}
     \end{column}
 \end{columns}
-\hfill \tiny Credit: \url{en.wikipedia.org/wiki/Marchant_calculator} \hspace{.6cm}
+\hfill \tiny Credit: \url{en.wikipedia.org/wiki/Marchant_calculator}
 
 ## History of statistical programming
 
@@ -55,7 +55,7 @@ date: \small SciPy India 2015 \newline
        \vspace{4em}
 
        Once upon a time, statistical programming involved
-       calling Fortan subroutines directly.
+       calling Fortran subroutines directly.
        \vspace{1em}
 
        S provided a common environment to interactively
@@ -64,7 +64,7 @@ date: \small SciPy India 2015 \newline
     \begin{column}{0.47\textwidth}
         \vspace{1cm}
         \begin{itemize}
-            \item Fortan (1950s)
+            \item Fortran (1950s)
             \item APL (1960s)
             \item S (1970s)
             \item R (1990s)
@@ -90,11 +90,11 @@ date: \small SciPy India 2015 \newline
 >>> from numpy.random import random
 ```
 \columnsbegin
-\column{.48\textwidth}
+\column{.45\textwidth}
 
-![](figs/monte_carlo.png)
+![](figs/monte_carlo2.png)
 
-\column{.52\textwidth}
+\column{.55\textwidth}
 
 ~~~~~~~~Python
 >>> x = 2*random(10**8) - 1
@@ -107,9 +107,16 @@ date: \small SciPy India 2015 \newline
 
 \columnsend
 
+## Resampling
+
+- Bootstrap
+- Permutation tests
+
 ## Deep learning
 
 ![](figs/deeplearning.png)
+
+\hfill \url{arxiv.org/abs/1506.00619}
 
 ## Stat 133: Concepts in Computing with Data
 
@@ -141,10 +148,6 @@ date: \small SciPy India 2015 \newline
 
 # Permutation testing
 
-## permute
-
-![](figs/permute1.png)
-
 ---
 
 Permutation tests (sometimes referred to as randomization, re-randomization, or
@@ -166,7 +169,7 @@ significance testing}.
 A sequence $X_1, X_2, X_3, \dots, X_n$ of random
 variables is \textcolor{blue}{exchangeable} if their joint distribution is invariant to
 permutations of the indices; that is, for all permutations $\pi$ of
-$(1, 2, \dots, n)$
+$1, 2, \dots, n$
 \begin{align*}
 p(x_1, \dots, x_n) &= p(x_{\pi(1)}, \dots, x_{\pi(n)})
 \end{align*}
@@ -180,21 +183,6 @@ identically-distributed} (iid) random variables.
 
 - But, simple random \textcolor{blue}{sampling without replacement} produces an
   exchangeable, but \textbf{not} independent, sequence of random variables.
-
-## Two sample problem
-
-- \textcolor{blue}{Question} Does a given fertilizer increase the yield of a
-  certain crop?
-
-- \textcolor{blue}{Experiment} Apply the fertilizer to exactly half of the field.
-  Measure crop yield in the two halves.
-
-## Two sample (aside: experimental design)
-
-To avoid confounding
-
-- divide the field into small, equally-sized blocks
-- 
 
 ## Effect of treatment in a randomized controlled experiment \small \url{www.stat.berkeley.edu/~stark/Teach/S240/Notes/lec1.pdf}
 
@@ -221,6 +209,216 @@ difference & 32&  33&  16&   6&  21&  17&  64&   7&  89&  -2&  11
 \vfill
 
 \textcolor{green}{How should we analyze the data?}
+
+## Informal Hypotheses
+
+\textcolor{blue}{Null hypothesis:} treatment has "no effect."
+
+\textcolor{blue}{Alternative hypothesis:} treatment increases cortical mass.
+
+\vspace{1cm}
+
+Suggests 1-sided test for an increase.
+
+## Test contenders
+
+\begin{itemize}
+        \item 2-sample Student $t$-test:
+              $$ 
+              \frac{\mbox{mean(treatment) - mean(control)}}
+                   {\mbox{pooled estimate of SD of difference of means}}
+              $$
+        \item 1-sample Student $t$-test on the differences:
+              $$
+              \frac{\mbox{mean(differences)}}{\mbox{SD(differences)}/\sqrt{11}}
+              $$
+              Better, since littermates are presumably more homogeneous.
+        \item Permutation test using $t$-statistic of differences:
+              same statistic, different way to calculate $P$-value.
+              Even better?
+\end{itemize}
+
+## Strong null hypothesis
+
+\textcolor{blue}{Treatment has no effect whatsoever---as if cortical mass were
+assigned to each rat before the randomization.}
+
+\vfill
+
+Then equally likely that the rat with the heavier cortex will be assigned
+to treatment or to control, independently across littermate pairs.
+
+\vfill
+
+Gives $2^{11} = 2,048$ equally likely possibilities:
+
+\small \begin{tabular}{lrrrrrrrrrrr}
+difference & $\pm$32& $\pm$33& $\pm$16& $\pm$6& $\pm$21& $\pm$17&
+             $\pm$64& $\pm$7& $\pm$89& $\pm$2& $\pm$11
+\end{tabular}
+
+\vfill
+
+For example, just as likely to observe original differences as
+
+\small \begin{tabular}{lrrrrrrrrrrr}
+        difference & -32& -33& -16& -6& -21& -17& -64& -7& -89& -2& -11
+\end{tabular}
+
+## Weak null hypothesis
+
+\textcolor{blue}{On average across pairs, treatment makes no difference.}
+
+## Alternatives
+
+\textcolor{blue}{Individual's response depends only on that individual's assignment}
+
+\vfill
+
+Special cases: shift, scale, etc.
+
+\vfill
+
+\textcolor{blue}{Interactions/Interference: my response could depend on whether you are assigned to treatment or control.}
+
+
+## Assumptions of the tests
+
+\begin{itemize}
+        \item 2-sample $t$-test:
+              \textcolor{blue}{masses are iid sample from normal distribution,
+              same unknown variance, same unknown mean.}
+              Tests weak null hypothesis (plus normality, independence, non-interference, etc.).
+        \item 1-sample $t$-test on the differences:
+              \textcolor{blue}{mass differences are iid sample from normal
+              distribution, unknown variance, zero mean.}
+              Tests weak null hypothesis (plus normality, independence, non-interference, etc.)
+        \item Permutation test:
+              \textcolor{blue}{Randomization fair, independent across pairs.}
+              Tests strong null hypothesis.
+\end{itemize}
+Assumptions of the permutation test are true by design: That's how treatment
+was assigned.
+
+## Student $t$-test calculations
+
+Mean of differences:  26.73mg
+
+Sample SD of differences:  27.33mg
+
+$t$-statistic: $26.73/(27.33/\sqrt{11}) = 3.244$
+
+$P$-value for 1-sided $t$-test:  0.0044
+
+\vfill
+
+\textcolor{blue}{Why do cortical weights have normal distribution?}
+
+\vfill
+
+\textcolor{blue}{Why is variance of the difference between treatment and control
+the same for different litters?}
+
+\vfill
+
+\textcolor{blue}{Treatment and control are {\em dependent\/} because assigning
+a rat to treatment excludes it from the control group, and vice versa.}
+
+\vfill
+
+\textcolor{blue}{Does $P$-value depend on assuming differences
+are iid sample from a normal distribution?  If we reject the null, is that because
+there is a treatment effect, or because the other assumptions are wrong?}
+
+## Permutation $t$-test calculations
+
+Could enumerate all $2^{11} = 2,048$ equally likely possibilities.
+Calculate $t$-statistic for each.
+
+$P$-value is
+$$
+        P = \frac{\mbox{number of possibilities with $t \ge 3.244$}}{\mbox{2,048}}
+$$
+(For mean instead of $t$, would be $2/2,048 =  0.00098$.)
+
+\vfill
+
+For more pairs, impractical to enumerate, but can simulate:
+
+\vfill
+
+Assign a random sign to each difference.
+Compute $t$-statistic
+Repeat 100,000 times
+$$
+        P \approx \frac{\mbox{number of simulations with $t \ge 3.244$}}{\mbox{100,000}}
+$$
+
+## Compute
+
+```python
+from itertools import product
+from numpy import array, sqrt
+
+t = [689, 656, 668, 660, 679, 663, 664, 647, 694, 633, 653]
+c = [657, 623, 652, 654, 658, 646, 600, 640, 605, 635, 642]
+d = array(t) - array(c)
+n = len(d)
+sn = sqrt(n)
+
+x = array(list(product([1, -1], repeat=11)))
+exact = x * d
+dist = exact.mean(axis=1) / (exact.std(axis=1) / np.sqrt(n))
+```
+
+## Simulate
+
+```python
+import numpy as np
+from numpy.random import binomial as binom
+
+t = [689, 656, 668, 660, 679, 663, 664, 647, 694, 633, 653]
+c = [657, 623, 652, 654, 658, 646, 600, 640, 605, 635, 642]
+d = np.array(t) - np.array(c)
+n = len(d)
+sn = np.sqrt(n)
+
+reps = 100000
+x = 1 - 2 * binom(1, .5, n*reps)
+x.shape = (n, reps)
+sim = x.T * d
+dist = sim.mean(axis=1) / (sim.std(axis=1) / np.sqrt(n))
+```
+
+## Visualize
+
+```python
+>>> import matplotlib.pyplot as plt
+>>> from scipy.stats import t
+>>> plt.hist(dist, 100, histtype='bar', normed=True)
+>>> plt.axvline(ts, color='red')
+>>> df = n - 1
+>>> x = np.linspace(t.ppf(0.0001, df), t.ppf(0.9999, df), 100)
+>>> plt.plot(x, t.pdf(x, df), lw=2, alpha=0.6)
+>>> plt.show()
+```
+
+## Visualize
+
+![](figs/one_sample_1.png)
+
+## Compare
+
+```python
+>>> np.mean(dist >= ts)
+0.00098
+```
+
+(versus 0.0044 for 1-sided $t$-test)
+
+## permute
+
+![](figs/permute1.png)
 
 ## Collaborators
 
