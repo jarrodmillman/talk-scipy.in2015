@@ -127,7 +127,7 @@ date: \small SciPy India 2015 \newline
 - \textcolor{blue}{General} purpose language with \textcolor{blue}{batteries included}
 - Popular for wide-range of \textcolor{blue}{scientific applications}
 - Growing number of libraries \textcolor{blue}{statistical applications}
-    - Pandas, sklearn, statmodels
+    - \href{http://pandas.pydata.org/}{\texttt{pandas}}, \href{http://scikit-learn.org/}{\texttt{scikit-learn}}, \href{http://statsmodels.sourceforge.net/}{\texttt{statsmodels}}
 
 ## Stat 94: Foundations of Data Science
 
@@ -210,9 +210,11 @@ difference & 32&  33&  16&   6&  21&  17&  64&   7&  89&  -2&  11
 
 \textcolor{green}{How should we analyze the data?}
 
-## Informal Hypotheses
+## Informal Hypotheses \small \url{www.stat.berkeley.edu/~stark/Teach/S240/Notes/lec1.pdf}
 
 \textcolor{blue}{Null hypothesis:} treatment has "no effect."
+
+\vspace{.5cm}
 
 \textcolor{blue}{Alternative hypothesis:} treatment increases cortical mass.
 
@@ -220,7 +222,7 @@ difference & 32&  33&  16&   6&  21&  17&  64&   7&  89&  -2&  11
 
 Suggests 1-sided test for an increase.
 
-## Test contenders
+## Test contenders \small \url{www.stat.berkeley.edu/~stark/Teach/S240/Notes/lec1.pdf}
 
 \begin{itemize}
         \item 2-sample Student $t$-test:
@@ -238,7 +240,7 @@ Suggests 1-sided test for an increase.
               Even better?
 \end{itemize}
 
-## Strong null hypothesis
+## Strong null hypothesis \small \url{www.stat.berkeley.edu/~stark/Teach/S240/Notes/lec1.pdf}
 
 \textcolor{blue}{Treatment has no effect whatsoever---as if cortical mass were
 assigned to each rat before the randomization.}
@@ -265,11 +267,11 @@ For example, just as likely to observe original differences as
         difference & -32& -33& -16& -6& -21& -17& -64& -7& -89& -2& -11
 \end{tabular}
 
-## Weak null hypothesis
+## Weak null hypothesis \small \url{www.stat.berkeley.edu/~stark/Teach/S240/Notes/lec1.pdf}
 
 \textcolor{blue}{On average across pairs, treatment makes no difference.}
 
-## Alternatives
+## Alternatives \small \url{www.stat.berkeley.edu/~stark/Teach/S240/Notes/lec1.pdf}
 
 \textcolor{blue}{Individual's response depends only on that individual's assignment}
 
@@ -282,7 +284,7 @@ Special cases: shift, scale, etc.
 \textcolor{blue}{Interactions/Interference: my response could depend on whether you are assigned to treatment or control.}
 
 
-## Assumptions of the tests
+## Assumptions of the tests \small \url{www.stat.berkeley.edu/~stark/Teach/S240/Notes/lec1.pdf}
 
 \begin{itemize}
         \item 2-sample $t$-test:
@@ -300,7 +302,7 @@ Special cases: shift, scale, etc.
 Assumptions of the permutation test are true by design: That's how treatment
 was assigned.
 
-## Student $t$-test calculations
+## Student $t$-test calculations \small \url{www.stat.berkeley.edu/~stark/Teach/S240/Notes/lec1.pdf}
 
 Mean of differences:  26.73mg
 
@@ -330,7 +332,7 @@ a rat to treatment excludes it from the control group, and vice versa.}
 are iid sample from a normal distribution?  If we reject the null, is that because
 there is a treatment effect, or because the other assumptions are wrong?}
 
-## Permutation $t$-test calculations
+## Permutation $t$-test calculations \small \url{www.stat.berkeley.edu/~stark/Teach/S240/Notes/lec1.pdf}
 
 Could enumerate all $2^{11} = 2,048$ equally likely possibilities.
 Calculate $t$-statistic for each.
@@ -364,59 +366,61 @@ t = [689, 656, 668, 660, 679, 663, 664, 647, 694, 633, 653]
 c = [657, 623, 652, 654, 658, 646, 600, 640, 605, 635, 642]
 d = array(t) - array(c)
 n = len(d)
-sn = sqrt(n)
 
 x = array(list(product([1, -1], repeat=11)))
 exact = x * d
-dist = exact.mean(axis=1) / (exact.std(axis=1) / np.sqrt(n))
+dist = exact.mean(axis=1) / (exact.std(axis=1) / sqrt(n))
 ```
 
-## Simulate
+## Simulate ($n \gg 11$) 
 
 ```python
-import numpy as np
+from numpy import array, sqrt
 from numpy.random import binomial as binom
 
-t = [689, 656, 668, 660, 679, 663, 664, 647, 694, 633, 653]
-c = [657, 623, 652, 654, 658, 646, 600, 640, 605, 635, 642]
-d = np.array(t) - np.array(c)
+t = [689, 656, 668, 660, 679, 663, 664, 647, ...]
+c = [657, 623, 652, 654, 658, 646, 600, 640, ...]
+d = array(t) - array(c)
 n = len(d)
-sn = np.sqrt(n)
 
 reps = 100000
 x = 1 - 2 * binom(1, .5, n*reps)
-x.shape = (n, reps)
-sim = x.T * d
-dist = sim.mean(axis=1) / (sim.std(axis=1) / np.sqrt(n))
+x.shape = (reps, n)
+sim = x * d
+dist = sim.mean(axis=1) / (sim.std(axis=1) / sqrt(n))
 ```
+
+## Compare
+
+```python
+>>> from numpy import mean
+>>> observed_ts = d.mean() / (d.std() / sqrt(n))
+>>> mean(dist >= observed_ts)
+0.0009765625
+```
+
+(versus 0.0044 for 1-sided $t$-test)
 
 ## Visualize
 
 ```python
->>> import matplotlib.pyplot as plt
->>> from scipy.stats import t
->>> plt.hist(dist, 100, histtype='bar', normed=True)
->>> plt.axvline(ts, color='red')
->>> df = n - 1
->>> x = np.linspace(t.ppf(0.0001, df), t.ppf(0.9999, df), 100)
->>> plt.plot(x, t.pdf(x, df), lw=2, alpha=0.6)
->>> plt.show()
+import matplotlib.pyplot as plt
+from numpy import linspace
+from scipy.stats import t
+
+plt.hist(dist, 100, histtype='bar', normed=True)
+plt.axvline(observed_ts, color='red')
+df = n - 1
+x = linspace(t.ppf(0.0001, df), t.ppf(0.9999, df), 100)
+plt.plot(x, t.pdf(x, df), lw=2, alpha=0.6)
+plt.show()
 ```
 
 ## Visualize
 
 ![](figs/one_sample_1.png)
 
-## Compare
-
-```python
->>> np.mean(dist >= ts)
-0.00098
-```
-
-(versus 0.0044 for 1-sided $t$-test)
-
-## permute
+## \href{https://github.com/statlab/permute}{\texttt{permute}}
 
 ![](figs/permute1.png)
 
